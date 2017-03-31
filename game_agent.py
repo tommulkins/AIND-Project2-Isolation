@@ -50,12 +50,15 @@ def custom_score(game, player):
 
     # Three heuristic methodologies listed here.  One will be chosen but all three will be analyzed in heuristic_analysis.pdf
 
+    score = None
+
     # Heuristic #1 - Multiply opponent's moves by two
-    #return float(own_moves - (2 * opp_moves))
+    #score = float(own_moves - (2 * opp_moves))
     # Heuristic #2 - Halve opponent's moves
-    return float(own_moves - (.5 * opp_moves))
+    #score = float(own_moves - (.5 * opp_moves))
     # Heuristic #3 - Multiply opponent's moves by two, then divide total by blank spaces on board
-    #return float( (own_moves - (2 * opp_moves)) / (49 - game.move_count) )
+    score = float((own_moves - opp_moves) / (own_moves+opp_moves))
+    return score
 
 class CustomPlayer:
     """Game-playing agent that chooses a move using your evaluation function
@@ -150,14 +153,14 @@ class CustomPlayer:
             # automatically catch the exception raised by the search method
             # when the timer gets close to expiring
 
-            # TODO: check maximizing_player arg for each search function
+            # TODO: Tom M - check maximizing_player arg for each search function
             if self.iterative:
                 depth = 0
                 while True:
                     depth += 1
-                    _, cur_best_move = search_method(game, depth) # _ is unused placeholder
+                    _, cur_best_move = search_method(game, depth) # _ is discarded
             else:
-                _, cur_best_move = search_method(game, self.search_depth) # _ is unused placeholder
+                _, cur_best_move = search_method(game, self.search_depth) # _ is discarded
 
         except Timeout:
             # Handle any actions required at timeout, if necessary
@@ -202,7 +205,7 @@ class CustomPlayer:
 
         # TODO: finish this function!
         # Tom M Implementation
-        if maximizing_player:
+        if maximizing_player: # Not using this arg, logic in max and min functions
             return self.maxvalue(game, depth)
         else:
             return self.minvalue(game, depth)
@@ -284,25 +287,25 @@ class CustomPlayer:
         if maximizing_player:
             max_score = float('-inf')
             max_m = None
-            for m in legal_moves:
-                score = self.alphabeta(game.forecast_move(m), depth - 1, alpha, beta, False)[0]
+            for move in legal_moves:
+                score = self.alphabeta(game.forecast_move(move), depth - 1, alpha, beta, False)[0]
                 if score > max_score:
                     max_score = score
-                    max_m = m
-                if score >= beta:  # prune
-                    return score, m
+                    max_m = move
+                if score >= beta:  # prune node
+                    return score, move
                 alpha = max(alpha, score)
             return max_score, max_m
 
         else:  # min node
             min_score = float('inf')
             min_m = None
-            for m in legal_moves:
-                score = self.alphabeta(game.forecast_move(m), depth - 1, alpha, beta, True)[0]
+            for move in legal_moves:
+                score = self.alphabeta(game.forecast_move(move), depth - 1, alpha, beta, True)[0]
                 if score < min_score:
                     min_score = score
-                    min_m = m
-                if score <= alpha:  # prune
-                    return score, m
+                    min_m = move
+                if score <= alpha:  # prune node
+                    return score, move
                 beta = min(beta, score)
             return min_score, min_m
