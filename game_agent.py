@@ -8,11 +8,83 @@ relative strength using tournament.py and include the results in your report.
 """
 import random
 
-
 class Timeout(Exception):
     """Subclass base exception for code clarity."""
     pass
 
+def heuristic1(game, player):
+    """Heuristic #1
+    Multiply opponent's moves by 2 if legal moves still available
+    
+    Returns
+    -------
+    float
+        A score as a float value
+    """
+    if game.is_loser(player):
+        return float("-inf")
+
+    if game.is_winner(player):
+        return float("inf")
+
+    own_moves = len(game.get_legal_moves(player))
+    opp_moves = len(game.get_legal_moves(game.get_opponent(player)))
+
+    score = float(own_moves - (2 * opp_moves))
+    return score
+
+def heuristic2(game, player):
+    """Heuristic #2
+    Multiply opponent's moves by .5 if legal moves still available
+    
+    Returns
+    -------
+    float
+        A score as a float value
+    """
+    if game.is_loser(player):
+        return float("-inf")
+
+    if game.is_winner(player):
+        return float("inf")
+
+    own_moves = len(game.get_legal_moves(player))
+    opp_moves = len(game.get_legal_moves(game.get_opponent(player)))
+
+    score = float(own_moves - (.5 * opp_moves))
+    return score
+
+def heuristic3(game, player):
+    """Heuristic #3
+    Difference of player's and opponent's move(s), then divide total by all remaining legal moves
+    
+    Parameters
+    ----------
+    game : `isolation.Board`
+        An instance of `isolation.Board` encoding the current state of the
+        game (e.g., player locations and blocked cells).
+
+    player : object
+        A player instance in the current game (i.e., an object corresponding to
+        one of the player objects `game.__player_1__` or `game.__player_2__`.)
+        
+    Returns
+    -------
+    float
+        A score as a float value
+    """
+
+    if game.is_loser(player):
+        return float("-inf")
+
+    if game.is_winner(player):
+        return float("inf")
+
+    own_moves = len(game.get_legal_moves(player))
+    opp_moves = len(game.get_legal_moves(game.get_opponent(player)))
+
+    score = float((own_moves - opp_moves) / (own_moves+opp_moves))
+    return score
 
 def custom_score(game, player):
     """Calculate the heuristic value of a game state from the point of view
@@ -38,27 +110,12 @@ def custom_score(game, player):
     """
 
     # TODO: finish this function!
-    # Tom M Implementation
-    if game.is_loser(player):
-        return float("-inf")
-
-    if game.is_winner(player):
-        return float("inf")
-
-    own_moves = len(game.get_legal_moves(player))
-    opp_moves = len(game.get_legal_moves(game.get_opponent(player)))
-
-    # Three heuristic methodologies listed here.  One will be chosen but all three will be analyzed in heuristic_analysis.pdf
-
-    score = None
-
-    # Heuristic #1 - Multiply opponent's moves by two
-    #score = float(own_moves - (2 * opp_moves))
-    # Heuristic #2 - Halve opponent's moves
-    #score = float(own_moves - (.5 * opp_moves))
-    # Heuristic #3 - Multiply opponent's moves by two, then divide total by blank spaces on board
-    score = float((own_moves - opp_moves) / (own_moves+opp_moves))
-    return score
+    #Use heuristic 1
+    # return heuristic1(game, player)
+    #Use heuristic 2
+    # return heuristic2(game, player)
+    #Use heuristic 3
+    return heuristic3(game, player)
 
 class CustomPlayer:
     """Game-playing agent that chooses a move using your evaluation function
